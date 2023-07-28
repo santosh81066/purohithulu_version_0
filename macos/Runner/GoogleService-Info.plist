@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>408590004796-883t903lumn41bu5iqttvg68thh22ul6.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.408590004796-883t903lumn41bu5iqttvg68thh22ul6</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>408590004796-0od62fss4fbogkrv8km7sdltf3p08fh0.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCwcFAC4LHauQvAupXO-n_6EJYF4Onupfo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>408590004796</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.purohithulu.agents</string>
+	<key>PROJECT_ID</key>
+	<string>vedicpurohit-d68c1</string>
+	<key>STORAGE_BUCKET</key>
+	<string>vedicpurohit-d68c1.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:408590004796:ios:1228e7d69d202cfc3f4939</string>
+	<key>DATABASE_URL</key>
+	<string>https://vedicpurohit-d68c1-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>
