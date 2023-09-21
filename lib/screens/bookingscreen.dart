@@ -97,12 +97,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
                               ),
                             ),
                             const SizedBox(height: 10.0),
-                            Text(
-                              'Address: ${value.purohithBookings!.data![index].address}',
-                              style: const TextStyle(
-                                fontSize: 16.0,
-                              ),
-                            ),
+                            value.purohithBookings!.data![index].address == null
+                                ? Container()
+                                : Text(
+                                    'Address: ${value.purohithBookings!.data![index].address}',
+                                    style: const TextStyle(
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
                             const SizedBox(height: 10.0),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -113,12 +115,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                     fontSize: 16.0,
                                   ),
                                 ),
-                                Text(
-                                  'Minutes: ${value.purohithBookings!.data![index].minutes}',
-                                  style: const TextStyle(
-                                    fontSize: 16.0,
-                                  ),
-                                ),
+                                value.purohithBookings!.data![index].minutes ==
+                                        null
+                                    ? Container()
+                                    : Text(
+                                        'Minutes: ${value.purohithBookings!.data![index].minutes}',
+                                        style: const TextStyle(
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
                               ],
                             ),
                             SizedBox(height: 10.0),

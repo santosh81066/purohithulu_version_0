@@ -1,5 +1,5 @@
 class PurohitApi {
-  String baseUrl = 'https://vedicpurohit.co.in';
+  String baseUrl = 'https://purohithuluapp.in';
   String getcatogory = '/insertcategory';
   final String login = '/purohithlogin';
   final String register = '/catId/';
@@ -10,4 +10,5 @@ class PurohitApi {
   final String getBookings = '/getbookings';
   final String location = '/location';
   final String userProfile = '/saveprofile';
+  final String withdrawAmount = '/withdraw';
 }

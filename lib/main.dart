@@ -10,6 +10,7 @@ import 'package:purohithulu/screens/registeruser.dart';
 import 'package:purohithulu/screens/splashscreen.dart';
 
 import 'package:purohithulu/screens/verify_otp.dart';
+import 'package:purohithulu/screens/wallet.dart';
 import 'package:purohithulu/screens/wellcomescreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'controller/auth.dart';
@@ -106,7 +107,8 @@ class MyApp extends StatelessWidget {
               'registeruser': (context) => Register(
                     scaffoldMessengerKey: scaffoldMessengerKey,
                   ),
-              'bookingHistory': (context) => BookingsScreen(),
+              'bookingHistory': (context) => const BookingsScreen(),
+              'wallet': (context) => const Wallet(),
             },
           );
         },

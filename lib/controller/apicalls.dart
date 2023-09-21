@@ -683,4 +683,79 @@ class ApiCalls extends ChangeNotifier {
     // print(
     //     "this is from getuserPic:${userDetails!.data![0].xfile!.readAsBytes()}");
   }
+
+  Future withdrawAmount(double amount, BuildContext context, String upi,
+      String? dateAndTime) async {
+    final fbuser = FirebaseAuth.instance.currentUser;
+    final uid = fbuser?.uid;
+    print(dateAndTime);
+    final url = '${PurohitApi().baseUrl}${PurohitApi().withdrawAmount}';
+    try {
+      final client = RetryClient(
+        http.Client(),
+        retries: 4,
+        when: (response) {
+          return response.statusCode == 401 ? true : false;
+        },
+        onRetry: (req, res, retryCount) async {
+          if (retryCount == 0 && res?.statusCode == 401) {
+            var accessToken = await Provider.of<Auth>(context, listen: false)
+                .restoreAccessToken(context);
+            req.headers['Authorization'] = accessToken;
+          }
+        },
+      );
+      var response = await client.post(Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': token!
+          },
+          body: json.encode(
+              {"upi": upi, 'amount': amount, 'dateandtime': dateAndTime}));
+
+      var userDetails = json.decode(response.body);
+      print('toggleOorF:$userDetails');
+      if (response.statusCode == 201) {
+        final userRef = FirebaseDatabase.instance
+            .ref()
+            .child('wallet')
+            .child(uid!)
+            .child('amount');
+        double? currentAmount;
+        await userRef.once().then((DatabaseEvent event) {
+          DataSnapshot snapshot = event.snapshot;
+          currentAmount = double.tryParse(snapshot.value?.toString() ?? '0.0');
+        });
+        print('this is $currentAmount and this is $amount');
+        if (currentAmount == null || currentAmount! < amount) {
+          print("Not enough funds!");
+          return; // You might want to handle this case differently
+        }
+
+// Deduct the amount
+        double newAmount = currentAmount! - amount;
+        try {
+          // Update Realtime Database
+          final userRef = FirebaseDatabase.instance
+              .ref()
+              .child('wallet')
+              .child(uid.toString());
+          await userRef.update({
+            'amount': newAmount,
+
+            // Add more fields if needed
+          });
+        } catch (e) {
+          print('Error updating Firebase Realtime Database: $e');
+        }
+      } else if (response.statusCode == 400) {
+        messages = userDetails['messages'].toString();
+      }
+      //print(messages);
+      notifyListeners();
+      return response.statusCode;
+    } catch (e) {
+      print(e);
+    }
+  }
 }
