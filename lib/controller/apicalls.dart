@@ -47,7 +47,7 @@ class ApiCalls extends ChangeNotifier {
   var zegoController = ZegoUIKitPrebuiltCallController();
   bool get isSwitched => _isSwitched;
   int? callcost;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List? bookings = [];
   profile.ProfileData? userDetails;
   Bookings? purohithBookings;
@@ -442,19 +442,30 @@ class ApiCalls extends ChangeNotifier {
           "b27d415148d2f0d29cecb53b33709a09d9e5153705520c6ad5bf3f3c2d33b3ba" /*input your AppSign*/,
       userID: userId,
       userName: userName,
-      notifyWhenAppRunningInBackgroundOrQuit: false,
-      events: ZegoUIKitPrebuiltCallInvitationEvents(
-          onIncomingCallAcceptButtonPressed: () async {
-        CallDurationWidget.startTimer(callcost!, context);
-        await userRef.update({
+ events: ZegoUIKitPrebuiltCallEvents(onCallEnd: (event, defaultAction) async{
+     await userRef.update({
+            'inCall': false,
+
+            // Add more fields if needed
+          });
+          CallDurationWidget.stopTimer(context);
+
+        
+ },),
+        invitationEvents:ZegoUIKitPrebuiltCallInvitationEvents(
+          onOutgoingCallAccepted: (String callID, ZegoCallUser calee)async {
+            CallDurationWidget.startTimer(callcost!, context);
+             await userRef.update({
           'inCall': true,
 
           // Add more fields if needed
         });
-      }, onIncomingCallDeclineButtonPressed: () {
-        CallDurationWidget.stopTimer(context);
-        print("stop timer:");
-      }),
+          },
+          onIncomingCallDeclineButtonPressed: () {
+                 CallDurationWidget.stopTimer(context);
+          },
+        ) ,
+     
       plugins: [ZegoUIKitSignalingPlugin()],
       requireConfig: (ZegoCallInvitationData data) {
         final config = (data.invitees.length > 1)
@@ -463,34 +474,35 @@ class ApiCalls extends ChangeNotifier {
                 : ZegoUIKitPrebuiltCallConfig.groupVoiceCall()
             : ZegoCallType.voiceCall == data.type
                 ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
-                : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall()
-          ..durationConfig.isVisible = true
-          ..durationConfig.onDurationUpdate = (Duration duration) {
-            if (duration.inSeconds >= 20 * 60) {
-              zegoController.hangUp(context);
-            }
-          };
-        final customdata = data.customData;
-        print("customdata:$customdata");
-        callcost = int.parse(customdata);
-        config.onHangUp = () async {
-          await userRef.update({
-            'inCall': false,
+                : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
+          
+          // ..durationConfig.onDurationUpdate = (Duration duration) {
+          //   if (duration.inSeconds >= 20 * 60) {
+          //     zegoController.hangUp(context);
+          //   }
+          // };
+        // final customdata = data.customData;
+        // print("customdata:$customdata");
+        // callcost = int.parse(customdata);
+        config.duration.isVisible=true;
+        // config.onHangUp = () async {
+        //   await userRef.update({
+        //     'inCall': false,
 
-            // Add more fields if needed
-          });
-          CallDurationWidget.stopTimer(context);
-        };
-        config.onOnlySelfInRoom = (context) async {
-          await userRef.update({
-            'inCall': false,
+        //     // Add more fields if needed
+        //   });
+        //   CallDurationWidget.stopTimer(context);
+        // };
+        // config.onOnlySelfInRoom = (context) async {
+        //   await userRef.update({
+        //     'inCall': false,
 
-            // Add more fields if needed
-          });
-          CallDurationWidget.stopTimer(context);
+        //     // Add more fields if needed
+        //   });
+        //   CallDurationWidget.stopTimer(context);
 
-          Navigator.pop(context);
-        };
+        //   Navigator.pop(context);
+        // };
 
         config.audioVideoViewConfig = ZegoPrebuiltAudioVideoViewConfig(
           foregroundBuilder: (context, size, user, extraInfo) {

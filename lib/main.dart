@@ -16,24 +16,34 @@ import 'package:firebase_core/firebase_core.dart';
 import 'controller/auth.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 final navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+   ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
 
+  // call the useSystemCallingUI
   ZegoUIKit().initLog().then((value) {
+    ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
+      [ZegoUIKitSignalingPlugin()],
+    );
+
     runApp(MyApp(navigatorKey: navigatorKey));
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
   const MyApp({super.key, required this.navigatorKey});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -73,7 +83,7 @@ class MyApp extends StatelessWidget {
         builder: (context, value, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            navigatorKey: navigatorKey,
+            navigatorKey: widget.navigatorKey,
             title: 'Agents',
             scaffoldMessengerKey: scaffoldMessengerKey,
             theme: ThemeData(
