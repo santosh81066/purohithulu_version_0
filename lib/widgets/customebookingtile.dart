@@ -194,7 +194,7 @@ class _CustomBookingTileState extends State<CustomBookingTile> {
                                       },
                                       child: const Text('Submit'),
                                       style: ElevatedButton.styleFrom(
-                                        primary: Colors.green,
+                                        backgroundColor: Colors.green,
                                       ),
                                     ),
                                   ],
@@ -303,7 +303,7 @@ class _CustomBookingTileState extends State<CustomBookingTile> {
                                       },
                                       child: const Text('Submit'),
                                       style: ElevatedButton.styleFrom(
-                                        primary: Colors.green,
+                                        backgroundColor: Colors.green,
                                       ),
                                     ),
                                   ],
@@ -337,7 +337,7 @@ class _CustomBookingTileState extends State<CustomBookingTile> {
                                   },
                                   child: const Text('Accept'),
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.green,
+                                    backgroundColor: Colors.green,
                                   ),
                                 ),
                                 ElevatedButton(
@@ -347,7 +347,7 @@ class _CustomBookingTileState extends State<CustomBookingTile> {
                                   },
                                   child: const Text('Reject'),
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.red,
+                                    backgroundColor: Colors.red,
                                   ),
                                 ),
                               ],
