@@ -1,5 +1,5 @@
 class PurohitApi {
-  String baseUrl = 'https://purohithuluapp.in';
+  String baseUrl = 'https://talk2purohit.com/';
   String getcatogory = '/insertcategory';
   final String login = '/purohithlogin';
   final String register = '/catId/';

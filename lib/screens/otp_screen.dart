@@ -20,7 +20,6 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  TextEditingController mobileno = TextEditingController();
   TextEditingController mobile = TextEditingController();
 
   String registerButton = 'Register';
@@ -39,7 +38,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   void dispose() {
-    mobileno.dispose();
     mobile.dispose();
 
     // TODO: implement dispose
