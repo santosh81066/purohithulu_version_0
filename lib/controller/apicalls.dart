@@ -129,6 +129,28 @@ class ApiCalls extends ChangeNotifier {
     }
   }
 
+  Future<void> login(BuildContext cont) async {
+    final url = PurohitApi().baseUrl + PurohitApi().getcatogory;
+
+    try {
+      var response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      categoryTypes = json.decode(response.body);
+      if (categoryTypes!['data'] != null) {
+        categories = categoryTypes!['data'];
+      }
+      // print(categories);
+
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future register(String mobileno, String expirience, String languages,
       String userName, BuildContext context, List price) async {
     print("from api calls register:${price.map((e) => e).toList()}");
@@ -204,28 +226,6 @@ class ApiCalls extends ChangeNotifier {
       return statuscode;
     } catch (e) {
       messages = e.toString();
-      print(e);
-    }
-  }
-
-  Future<void> login(BuildContext cont) async {
-    final url = PurohitApi().baseUrl + PurohitApi().getcatogory;
-
-    try {
-      var response = await http.get(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      );
-      categoryTypes = json.decode(response.body);
-      if (categoryTypes!['data'] != null) {
-        categories = categoryTypes!['data'];
-      }
-      // print(categories);
-
-      notifyListeners();
-    } catch (e) {
       print(e);
     }
   }
@@ -442,30 +442,29 @@ class ApiCalls extends ChangeNotifier {
           "b27d415148d2f0d29cecb53b33709a09d9e5153705520c6ad5bf3f3c2d33b3ba" /*input your AppSign*/,
       userID: userId,
       userName: userName,
- events: ZegoUIKitPrebuiltCallEvents(onCallEnd: (event, defaultAction) async{
-     await userRef.update({
+      events: ZegoUIKitPrebuiltCallEvents(
+        onCallEnd: (event, defaultAction) async {
+          await userRef.update({
             'inCall': false,
 
             // Add more fields if needed
           });
           CallDurationWidget.stopTimer(context);
+        },
+      ),
+      invitationEvents: ZegoUIKitPrebuiltCallInvitationEvents(
+        onOutgoingCallAccepted: (String callID, ZegoCallUser calee) async {
+          CallDurationWidget.startTimer(callcost!, context);
+          await userRef.update({
+            'inCall': true,
 
-        
- },),
-        invitationEvents:ZegoUIKitPrebuiltCallInvitationEvents(
-          onOutgoingCallAccepted: (String callID, ZegoCallUser calee)async {
-            CallDurationWidget.startTimer(callcost!, context);
-             await userRef.update({
-          'inCall': true,
-
-          // Add more fields if needed
-        });
-          },
-          onIncomingCallDeclineButtonPressed: () {
-                 CallDurationWidget.stopTimer(context);
-          },
-        ) ,
-     
+            // Add more fields if needed
+          });
+        },
+        onIncomingCallDeclineButtonPressed: () {
+          CallDurationWidget.stopTimer(context);
+        },
+      ),
       plugins: [ZegoUIKitSignalingPlugin()],
       requireConfig: (ZegoCallInvitationData data) {
         final config = (data.invitees.length > 1)
@@ -475,16 +474,16 @@ class ApiCalls extends ChangeNotifier {
             : ZegoCallType.voiceCall == data.type
                 ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
                 : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
-          
-          // ..durationConfig.onDurationUpdate = (Duration duration) {
-          //   if (duration.inSeconds >= 20 * 60) {
-          //     zegoController.hangUp(context);
-          //   }
-          // };
+
+        // ..durationConfig.onDurationUpdate = (Duration duration) {
+        //   if (duration.inSeconds >= 20 * 60) {
+        //     zegoController.hangUp(context);
+        //   }
+        // };
         // final customdata = data.customData;
         // print("customdata:$customdata");
         // callcost = int.parse(customdata);
-        config.duration.isVisible=true;
+        config.duration.isVisible = true;
         // config.onHangUp = () async {
         //   await userRef.update({
         //     'inCall': false,

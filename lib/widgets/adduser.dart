@@ -15,7 +15,7 @@ import 'insertprofile.dart';
 
 class AddUser extends StatefulWidget {
   const AddUser({
-    Key? key,
+    super.key,
     this.mobileNo,
     this.userName,
     this.languages,
@@ -27,7 +27,7 @@ class AddUser extends StatefulWidget {
     this.buttonName,
     this.scaffoldMessengerKey,
     this.description,
-  }) : super(key: key);
+  });
   final TextEditingController? mobileNo;
   final TextEditingController? userName;
   final TextEditingController? languages;
@@ -63,6 +63,7 @@ class _AddUserState extends State<AddUser> {
   Widget build(BuildContext context) {
     var flutterFunctions = Provider.of<FlutterFunctions>(context);
     var apicalls = Provider.of<ApiCalls>(context, listen: false);
+
     final ScaffoldMessengerState scaffoldKey =
         widget.scaffoldMessengerKey!.currentState as ScaffoldMessengerState;
     List<List<TextEditingController>> prices = List.generate(
@@ -78,11 +79,9 @@ class _AddUserState extends State<AddUser> {
     );
     List<TextEditingController> flattenedPrices =
         prices.expand((prices) => prices).toList();
-    // String? errorMessage =
-    //     apicalls.validateForm(flattenedPrices, apicalls.selectedCatId);
+
     List<Data> filteredCategories =
         apicalls.categorieModel!.data!.where((category) {
-      // return true if the category meets the filter condition, false otherwise
       return category.cattype != "e"; // replace with your own filter condition
     }).toList();
 

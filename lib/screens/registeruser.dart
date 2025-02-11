@@ -35,7 +35,6 @@ class _RegisterState extends State<Register> {
     for (var controller in price) {
       controller.dispose();
     }
-    // TODO: implement dispose
     super.dispose();
   }
 

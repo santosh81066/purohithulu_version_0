@@ -47,17 +47,19 @@ class _CustomBookingTileState extends State<CustomBookingTile> {
         }
 
         Map<String, dynamic> bookingDataMap = snapshot.data!;
-        String? bookingStatus = bookingDataMap['booking status'] != null
-            ? bookingDataMap['booking status']
-            : "Null";
+        String? bookingStatus = bookingDataMap['booking status'] ??
+            bookingDataMap['status'] ??
+            "Null";
 
         String userUid = bookingDataMap['userUid'];
         if (!(bookingStatus == 'r' ||
             bookingStatus == 'c' ||
             bookingStatus == 'Null')) {
           noLiveBookings = false;
+          print("Booking is live: $bookingStatus"); // Add this
         } else {
           noLiveBookings = true;
+          print("Booking is not live: $bookingStatus"); // Add this
         }
         return noLiveBookings == true
             ? Container()
@@ -365,21 +367,26 @@ class _CustomBookingTileState extends State<CustomBookingTile> {
 
   Stream<Map<String, dynamic>?> bookingStatusStream(
       int bookingDataId, DatabaseReference bookingRef) {
-    List<Map<String, dynamic>> bookings = [];
     return bookingRef.onValue.map((event) {
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic> userData =
             event.snapshot.value as Map<dynamic, dynamic>;
+
         for (var key in userData.keys) {
           Map<dynamic, dynamic> userBookings =
               userData[key].cast<dynamic, dynamic>();
+
           for (var bookingKey in userBookings.keys) {
             Map<dynamic, dynamic> bookingData =
                 userBookings[bookingKey].cast<dynamic, dynamic>();
-            if (bookingData['id'] == bookingDataId) {
-              // Include the user UID in the returned data
-              bookingData['userUid'] = key;
 
+            if (bookingData['id'] == bookingDataId) {
+              // Check both possible status field names
+              String? status =
+                  bookingData['booking status'] ?? bookingData['status'];
+              bookingData['booking status'] =
+                  status; // Normalize the status field
+              bookingData['userUid'] = key;
               return bookingData.cast<String, dynamic>();
             }
           }

@@ -125,6 +125,13 @@ class _WellcomeScreenState extends State<WellcomeScreen>
                 )
               : Consumer<ApiCalls>(
                   builder: (context, booking, child) {
+                    print("Bookings data: ${booking.purohithBookings}");
+                    // Add these prints
+                    print(
+                        "Bookings data length: ${booking.purohithBookings?.data?.length}");
+                    print(
+                        "Raw bookings data: ${booking.purohithBookings?.data?.map((b) => b.toJson())}");
+
                     return booking.purohithBookings == null
                         ? const Center(child: Text('Sorry no bookings'))
                         : BookingsList(
