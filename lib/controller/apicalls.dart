@@ -40,7 +40,8 @@ class ApiCalls extends ChangeNotifier {
   String? messages;
   List? users = [];
   Map? user;
-  Categories? categorieModel;
+  // In your ApiCalls class
+  Categories? categorieModel = Categories(); // Initialize with empty model
   Location? location;
   int? locationId;
   bool _isSwitched = false;
@@ -109,7 +110,7 @@ class ApiCalls extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getCatogories(BuildContext cont) async {
+  Future<void> fetchCategories(BuildContext context) async {
     final url = PurohitApi().baseUrl + PurohitApi().getcatogory;
 
     try {
@@ -125,7 +126,7 @@ class ApiCalls extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print(e);
+      print('Error fetching categories: $e');
     }
   }
 
@@ -147,6 +148,93 @@ class ApiCalls extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
+      print(e);
+    }
+  }
+
+  Future finalregister(
+      String mobileno,
+      String adhar,
+      String profilepic,
+      String expirience,
+      String languages,
+      String userName,
+      BuildContext context,
+      List price) async {
+    print("from api calls register:${price.map((e) => e).toList()}");
+    var flutterFunctions =
+        Provider.of<FlutterFunctions>(context, listen: false);
+    var catIdString = selectedCatId.isNotEmpty ? selectedCatId.join(",") : '';
+    String randomLetters = generateRandomLetters(10);
+
+    var data = {
+      "mobileno": mobileno,
+      "role": "p",
+      "username": userName,
+      "userstatus": "0",
+      "adhar": "${randomLetters}_adhar",
+      "profilepic": "${randomLetters}_profilepic",
+      "expirience": expirience,
+      "lang": languages,
+      "isonline": "0",
+      "location": locationId
+    };
+    var separator = '/';
+
+    List<List<String>> priceList = [];
+    for (var i = 0; i < price.length; i++) {
+      List<String> subcatPrices = [];
+      for (var j = 0; j < price[i].length; j++) {
+        String text = price[i][j].text;
+
+        if (text.isNotEmpty) {
+          subcatPrices.add(text);
+        }
+        // Do something with the text value
+      }
+      priceList.add(subcatPrices);
+    }
+    String prices = priceList.map((e) => e.join(',')).join(',');
+    prices = prices.replaceAll(RegExp(r',+$'), ''); // remove trailing commas
+    prices = prices.replaceAll(RegExp(r',,'), ','); // remove trailing commas
+
+    var url =
+        "${PurohitApi().baseUrl}${PurohitApi().register}$catIdString$separator$prices";
+    Map<String, String> obj = {"attributes": json.encode(data).toString()};
+    print('Price for category: $url');
+    try {
+      loading();
+      //print(isloading);
+      var response = http.MultipartRequest('POST', Uri.parse(url))
+        ..files.add(await http.MultipartFile.fromPath(
+            "imagefile[]", flutterFunctions.imageFileList![0].path,
+            contentType: parser.MediaType("image", "jpg")))
+        ..files.add(await http.MultipartFile.fromPath(
+            "imagefile[]", flutterFunctions.imageFileList![1].path,
+            contentType: parser.MediaType("image", "jpg")))
+        ..fields.addAll(obj);
+      final send = await response.send();
+      final res = await http.Response.fromStream(send);
+      var statuscode = res.statusCode;
+      loading();
+      //print('mobileno:$mobileno,');
+      user = json.decode(res.body);
+      // print(response.fields);
+
+      // print(isloading);
+      if (user!['data'] != null) {
+        users = user!['data'];
+        messages = user!['messages'].toString();
+        // var firebaseresponse = await http.post(Uri.parse(firebaseUrl),
+        //     body: json.encode({'status': apiCalls.users![0]['isonline']}));
+        // var firebaseDetails = json.decode(firebaseresponse.body);
+      }
+      messages = user!['messages'].toString();
+      print(messages);
+      notifyListeners();
+      return statuscode;
+    } catch (e) {
+      messages = e.toString();
       print(e);
     }
   }

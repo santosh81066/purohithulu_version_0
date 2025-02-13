@@ -29,7 +29,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   void initState() {
-    Provider.of<ApiCalls>(context, listen: false).getCatogories(context);
+    Provider.of<ApiCalls>(context, listen: false).fetchCategories(context);
     Provider.of<ApiCalls>(context, listen: false).getLocation(context);
 
     // TODO: implement initState

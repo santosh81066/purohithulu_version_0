@@ -3,35 +3,38 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../model/categories.dart';
-import 'text_widget.dart';
+//import 'package:purohithulu_admin/widgets/text_widget.dart';
 
 import '../controller/apicalls.dart';
-import '../functions/flutterfunctions.dart';
 
+import '../functions/flutterfunctions.dart';
+import '../model/categories.dart';
 import 'button.dart';
-import 'insertpan.dart';
+//import 'insertadhar.dart';
 import 'insertprofile.dart';
 
 class AddUser extends StatefulWidget {
   const AddUser({
-    super.key,
+    Key? key,
     this.mobileNo,
     this.userName,
     this.languages,
+    this.adhar,
     this.adharId,
     this.languagesHint,
     this.mobileHint,
     this.userNameHint,
+    this.profilepic,
     this.panId,
     this.buttonName,
     this.scaffoldMessengerKey,
     this.description,
-  });
+  }) : super(key: key);
   final TextEditingController? mobileNo;
   final TextEditingController? userName;
   final TextEditingController? languages;
-
+  final TextEditingController? adhar;
+  final TextEditingController? profilepic;
   final TextEditingController? description;
   final String? panId;
   final String? adharId;
@@ -46,6 +49,15 @@ class AddUser extends StatefulWidget {
   State<AddUser> createState() => _AddUserState();
 }
 
+@override
+void initState(BuildContext context) {
+  initState(context);
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    Provider.of<ApiCalls>(context, listen: false)
+        .fetchCategories(context); // Method to fetch categories
+  });
+}
+
 class _AddUserState extends State<AddUser> {
   @override
   void dispose() {
@@ -55,7 +67,8 @@ class _AddUserState extends State<AddUser> {
     widget.mobileNo!.dispose();
     widget.userName!.dispose();
     widget.languages!.dispose();
-
+    widget.adhar!.dispose();
+    widget.profilepic!.dispose();
     widget.description!.dispose();
   }
 
@@ -63,25 +76,30 @@ class _AddUserState extends State<AddUser> {
   Widget build(BuildContext context) {
     var flutterFunctions = Provider.of<FlutterFunctions>(context);
     var apicalls = Provider.of<ApiCalls>(context, listen: false);
-
     final ScaffoldMessengerState scaffoldKey =
         widget.scaffoldMessengerKey!.currentState as ScaffoldMessengerState;
-    List<List<TextEditingController>> prices = List.generate(
-      apicalls.categorieModel!.data!.length,
-      (mainindex) {
-        var subcatCount =
-            apicalls.categorieModel!.data![mainindex].subcat!.length;
-        return List.generate(
-          subcatCount + 1, // add one for the main category price
-          (subindex) => TextEditingController(),
-        );
-      },
-    );
+    List<List<TextEditingController>> prices = [];
+    if (apicalls.categorieModel != null &&
+        apicalls.categorieModel!.data != null) {
+      prices = List.generate(
+        apicalls.categorieModel!.data!.length,
+        (mainindex) {
+          var subcatCount =
+              apicalls.categorieModel!.data![mainindex].subcat?.length ?? 0;
+          return List.generate(
+            subcatCount + 1,
+            (subindex) => TextEditingController(),
+          );
+        },
+      );
+    }
     List<TextEditingController> flattenedPrices =
         prices.expand((prices) => prices).toList();
-
+    // String? errorMessage =
+    //     apicalls.validateForm(flattenedPrices, apicalls.selectedCatId);
     List<Data> filteredCategories =
         apicalls.categorieModel!.data!.where((category) {
+      // return true if the category meets the filter condition, false otherwise
       return category.cattype != "e"; // replace with your own filter condition
     }).toList();
 
@@ -262,6 +280,8 @@ class _AddUserState extends State<AddUser> {
                         },
                         itemCount: filteredCategories.length,
                         itemBuilder: (cont, mainindex) {
+                          print(
+                              "Rebuilding sub-widget for subindex: $mainindex");
                           //print("$price:$index");
                           //price.add(TextEditingController());
                           TextEditingController controller1 =
@@ -280,6 +300,8 @@ class _AddUserState extends State<AddUser> {
                                       physics:
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder: (contex, subindex) {
+                                        print(
+                                            "Rebuilding sub-widget for subindex: $subindex");
                                         TextEditingController controller =
                                             prices[mainindex][subindex];
                                         //print("$price:$index");
@@ -398,14 +420,16 @@ class _AddUserState extends State<AddUser> {
                       ? Button(
                           onTap: () async {
                             if (Form.of(context).validate()) {
-                              flutterFunctions.registerPhoneAuth(
-                                  context,
-                                  "+91${widget.mobileNo!.text.trim()}",
-                                  widget.description!.text.trim(),
-                                  widget.languages!.text.trim(),
-                                  widget.userName!.text.trim(),
-                                  scaffoldKey,
-                                  prices);
+                              await value.finalregister(
+                                "+91${widget.mobileNo!.text.trim()}",
+                                widget.adhar!.text.trim(),
+                                widget.profilepic!.text.trim(),
+                                widget.description!.text.trim(),
+                                widget.languages!.text.trim(),
+                                widget.userName!.text.trim(),
+                                context,
+                                prices,
+                              );
 
                               scaffoldKey.showSnackBar(SnackBar(
                                 content: Text('${value.messages}'),

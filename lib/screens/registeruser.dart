@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/app_drawer.dart';
 
 import '../widgets/adduser.dart';
+import '../widgets/app_drawer.dart';
 
 class Register extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
@@ -15,7 +15,8 @@ class _RegisterState extends State<Register> {
   TextEditingController mobileNo = TextEditingController();
   TextEditingController userName = TextEditingController();
   TextEditingController languages = TextEditingController();
-
+  TextEditingController adhar = TextEditingController();
+  TextEditingController pan = TextEditingController();
   TextEditingController expirience = TextEditingController();
   List<TextEditingController> price = [];
   String adharId = 'Enter image name';
@@ -30,11 +31,13 @@ class _RegisterState extends State<Register> {
     mobileNo.dispose();
     userName.dispose();
     languages.dispose();
-
+    adhar.dispose();
+    pan.dispose();
     expirience.dispose();
     for (var controller in price) {
       controller.dispose();
     }
+    // TODO: implement dispose
     super.dispose();
   }
 
@@ -47,6 +50,8 @@ class _RegisterState extends State<Register> {
         mobileNo: mobileNo,
         userName: userName,
         languages: languages,
+        adhar: adhar,
+        profilepic: pan,
         mobileHint: mobileHint,
         userNameHint: userNameHint,
         languagesHint: languagesHint,
