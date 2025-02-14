@@ -50,8 +50,6 @@ class _RegisterState extends State<Register> {
         mobileNo: mobileNo,
         userName: userName,
         languages: languages,
-        adhar: adhar,
-        profilepic: pan,
         mobileHint: mobileHint,
         userNameHint: userNameHint,
         languagesHint: languagesHint,
