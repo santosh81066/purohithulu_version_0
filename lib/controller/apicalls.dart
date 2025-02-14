@@ -669,12 +669,12 @@ class ApiCalls extends ChangeNotifier {
     final databaseReference = FirebaseDatabase.instance.ref().child('presence');
     final userStatusRef = databaseReference.child(uid).child('status');
     final userIsonlineRef = databaseReference.child(uid).child('isonline');
-    if (userStatusRef != null) {
-      await userStatusRef.onDisconnect().set('disconnected').then((_) {
-        userStatusRef.set('connected');
-      });
-      await userIsonlineRef.onDisconnect().set(false);
-    }
+    // if (userStatusRef != null) {
+    //   await userStatusRef.onDisconnect().set('disconnected').then((_) {
+    //     userStatusRef.set('connected');
+    //   });
+    //   await userIsonlineRef.onDisconnect().set(false);
+    // }
   }
 
   Future<void> updateBookingStatusById(
@@ -703,7 +703,7 @@ class ApiCalls extends ChangeNotifier {
               if (bookingsData[bookingId]['id'] == bookingDataId) {
                 // Update the booking status
                 bookingRef.child(userId).child(bookingId).update({
-                  'booking status': newStatus,
+                  'status': newStatus,
                 });
                 return; // Exit the function once the booking is updated
               }

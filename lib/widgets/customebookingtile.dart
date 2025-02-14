@@ -47,9 +47,8 @@ class _CustomBookingTileState extends State<CustomBookingTile> {
         }
 
         Map<String, dynamic> bookingDataMap = snapshot.data!;
-        String? bookingStatus = bookingDataMap['booking status'] ??
-            bookingDataMap['status'] ??
-            "Null";
+        String? bookingStatus =
+            bookingDataMap['status'] ?? bookingDataMap['status'] ?? "Null";
 
         String userUid = bookingDataMap['userUid'];
         if (!(bookingStatus == 'r' ||
@@ -382,10 +381,8 @@ class _CustomBookingTileState extends State<CustomBookingTile> {
 
             if (bookingData['id'] == bookingDataId) {
               // Check both possible status field names
-              String? status =
-                  bookingData['booking status'] ?? bookingData['status'];
-              bookingData['booking status'] =
-                  status; // Normalize the status field
+              String? status = bookingData['status'] ?? bookingData['status'];
+              bookingData['status'] = status; // Normalize the status field
               bookingData['userUid'] = key;
               return bookingData.cast<String, dynamic>();
             }
