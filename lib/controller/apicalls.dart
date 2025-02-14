@@ -240,8 +240,8 @@ class ApiCalls extends ChangeNotifier {
   }
 
   Future register(String mobileno, String expirience, String languages,
-      String userName, BuildContext context, List price) async {
-    print("from api calls register:${price.map((e) => e).toList()}");
+      String userName, BuildContext context) async {
+    //print("from api calls register:${price.map((e) => e).toList()}");
     var flutterFunctions =
         Provider.of<FlutterFunctions>(context, listen: false);
     var catIdString = selectedCatId.isNotEmpty ? selectedCatId.join(",") : '';
@@ -260,27 +260,10 @@ class ApiCalls extends ChangeNotifier {
       "location": locationId
     };
     var separator = '/';
-    List<List<String>> priceList = [];
-    for (var i = 0; i < price.length; i++) {
-      List<String> subcatPrices = [];
-      for (var j = 0; j < price[i].length; j++) {
-        String text = price[i][j].text;
-
-        if (text.isNotEmpty) {
-          subcatPrices.add(text);
-        }
-        // Do something with the text value
-      }
-      priceList.add(subcatPrices);
-    }
-    String prices = priceList.map((e) => e.join(',')).join(',');
-    prices = prices.replaceAll(RegExp(r',+$'), ''); // remove trailing commas
-    prices = prices.replaceAll(RegExp(r',,'), ','); // remove trailing commas
 
     var url =
-        "${PurohitApi().baseUrl}${PurohitApi().register}$catIdString$separator$prices";
+        "${PurohitApi().baseUrl}${PurohitApi().register}$catIdString$separator";
     Map<String, String> obj = {"attributes": json.encode(data).toString()};
-    print('Price for category: $url');
     try {
       loading();
       //print(isloading);

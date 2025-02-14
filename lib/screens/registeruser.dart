@@ -59,7 +59,7 @@ class _RegisterState extends State<Register> {
         description: expirience,
         panId: panId,
         buttonName: buttonName,
-        scaffoldMessengerKey: widget.scaffoldMessengerKey,
+        //scaffoldMessengerKey: widget.scaffoldMessengerKey,
       ),
     );
   }

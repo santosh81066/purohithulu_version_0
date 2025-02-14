@@ -3,38 +3,35 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-//import 'package:purohithulu_admin/widgets/text_widget.dart';
-
-import '../controller/apicalls.dart';
-
-import '../functions/flutterfunctions.dart';
 import '../model/categories.dart';
+import 'text_widget.dart';
+import 'package:purohithulu/providers/registerprovider.dart';
+import '../controller/apicalls.dart';
+import '../functions/flutterfunctions.dart';
+
 import 'button.dart';
-//import 'insertadhar.dart';
+import 'insertpan.dart';
 import 'insertprofile.dart';
 
 class AddUser extends StatefulWidget {
   const AddUser({
-    Key? key,
+    super.key,
     this.mobileNo,
     this.userName,
     this.languages,
-    this.adhar,
     this.adharId,
     this.languagesHint,
     this.mobileHint,
     this.userNameHint,
-    this.profilepic,
     this.panId,
     this.buttonName,
-    this.scaffoldMessengerKey,
+    //this.scaffoldMessengerKey,
     this.description,
-  }) : super(key: key);
+  });
   final TextEditingController? mobileNo;
   final TextEditingController? userName;
   final TextEditingController? languages;
-  final TextEditingController? adhar;
-  final TextEditingController? profilepic;
+
   final TextEditingController? description;
   final String? panId;
   final String? adharId;
@@ -43,19 +40,10 @@ class AddUser extends StatefulWidget {
   final String? languagesHint;
   final String? buttonName;
 
-  final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
+  // final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
 
   @override
   State<AddUser> createState() => _AddUserState();
-}
-
-@override
-void initState(BuildContext context) {
-  initState(context);
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    Provider.of<ApiCalls>(context, listen: false)
-        .fetchCategories(context); // Method to fetch categories
-  });
 }
 
 class _AddUserState extends State<AddUser> {
@@ -67,39 +55,35 @@ class _AddUserState extends State<AddUser> {
     widget.mobileNo!.dispose();
     widget.userName!.dispose();
     widget.languages!.dispose();
-    widget.adhar!.dispose();
-    widget.profilepic!.dispose();
+
     widget.description!.dispose();
   }
+
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     var flutterFunctions = Provider.of<FlutterFunctions>(context);
     var apicalls = Provider.of<ApiCalls>(context, listen: false);
-    final ScaffoldMessengerState scaffoldKey =
-        widget.scaffoldMessengerKey!.currentState as ScaffoldMessengerState;
-    List<List<TextEditingController>> prices = [];
-    if (apicalls.categorieModel != null &&
-        apicalls.categorieModel!.data != null) {
-      prices = List.generate(
-        apicalls.categorieModel!.data!.length,
-        (mainindex) {
-          var subcatCount =
-              apicalls.categorieModel!.data![mainindex].subcat?.length ?? 0;
-          return List.generate(
-            subcatCount + 1,
-            (subindex) => TextEditingController(),
-          );
-        },
-      );
-    }
+
+    // final ScaffoldMessengerState scaffoldKey =
+    //     widget.scaffoldMessengerKey!.currentState as ScaffoldMessengerState;
+    List<List<TextEditingController>> prices = List.generate(
+      apicalls.categorieModel!.data!.length,
+      (mainindex) {
+        var subcatCount =
+            apicalls.categorieModel!.data![mainindex].subcat!.length;
+        return List.generate(
+          subcatCount + 1, // add one for the main category price
+          (subindex) => TextEditingController(),
+        );
+      },
+    );
     List<TextEditingController> flattenedPrices =
         prices.expand((prices) => prices).toList();
-    // String? errorMessage =
-    //     apicalls.validateForm(flattenedPrices, apicalls.selectedCatId);
+
     List<Data> filteredCategories =
         apicalls.categorieModel!.data!.where((category) {
-      // return true if the category meets the filter condition, false otherwise
       return category.cattype != "e"; // replace with your own filter condition
     }).toList();
 
@@ -110,6 +94,7 @@ class _AddUserState extends State<AddUser> {
       trackVisibility: true,
       child: SingleChildScrollView(
         child: Form(
+          key: formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -280,15 +265,6 @@ class _AddUserState extends State<AddUser> {
                         },
                         itemCount: filteredCategories.length,
                         itemBuilder: (cont, mainindex) {
-                          print(
-                              "Rebuilding sub-widget for subindex: $mainindex");
-                          //print("$price:$index");
-                          //price.add(TextEditingController());
-                          TextEditingController controller1 =
-                              prices[mainindex].isNotEmpty
-                                  ? prices[mainindex][0]
-                                  : TextEditingController();
-
                           return value.categorieModel!.data![mainindex].subcat!
                                   .isNotEmpty
                               ? ExpansionTile(
@@ -300,8 +276,6 @@ class _AddUserState extends State<AddUser> {
                                       physics:
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder: (contex, subindex) {
-                                        print(
-                                            "Rebuilding sub-widget for subindex: $subindex");
                                         TextEditingController controller =
                                             prices[mainindex][subindex];
                                         //print("$price:$index");
@@ -314,6 +288,13 @@ class _AddUserState extends State<AddUser> {
                                                       .data![mainindex]
                                                       .subcat![subindex]['id']),
                                               onChanged: (val) {
+                                                final id = value
+                                                    .categorieModel!
+                                                    .data![mainindex]
+                                                    .subcat![subindex]['id'];
+                                                if (id != null) {
+                                                  value.selectedCat(id);
+                                                }
                                                 value.selectedCat(value
                                                     .categorieModel!
                                                     .data![mainindex]
@@ -327,34 +308,6 @@ class _AddUserState extends State<AddUser> {
                                                   .data![mainindex]
                                                   .subcat![subindex]['title']),
                                             ),
-                                            TextFormField(
-                                                validator: (validator) {
-                                                  if (validator == null ||
-                                                      validator.isEmpty) {
-                                                    if (value.selectedCatId
-                                                        .contains(value
-                                                                .categorieModel!
-                                                                .data![mainindex]
-                                                                .subcat![
-                                                            subindex]['id'])) {
-                                                      return "please enter the price";
-                                                    }
-                                                  }
-                                                  return null;
-                                                },
-                                                decoration: InputDecoration(
-                                                  hintText:
-                                                      "please enter ${value.categorieModel!.data![mainindex].subcat![subindex]['title']} price",
-                                                  labelStyle: TextStyle(
-                                                      color: Colors.grey),
-                                                  focusedBorder:
-                                                      const OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        color: Colors.grey),
-                                                  ),
-                                                ),
-                                                controller: controller,
-                                                cursorColor: Colors.grey),
                                           ],
                                         );
                                       },
@@ -379,32 +332,6 @@ class _AddUserState extends State<AddUser> {
                                       title: Text(value.categorieModel!
                                           .data![mainindex].title!),
                                     ),
-                                    TextFormField(
-                                      validator: (validator) {
-                                        if (validator == null ||
-                                            validator.isEmpty) {
-                                          if (value.selectedCatId.contains(value
-                                              .categorieModel!
-                                              .data![mainindex]
-                                              .id)) {
-                                            return "please enter the price";
-                                          }
-                                        }
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText:
-                                            "please enter ${value.categorieModel!.data![mainindex].title} price",
-                                        labelStyle:
-                                            TextStyle(color: Colors.grey),
-                                        focusedBorder: const OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.grey),
-                                        ),
-                                      ),
-                                      cursorColor: Colors.grey,
-                                      controller: controller1,
-                                    ),
                                   ],
                                 );
                         },
@@ -413,34 +340,30 @@ class _AddUserState extends State<AddUser> {
                   ),
                 );
               }),
-              Consumer<ApiCalls>(
-                builder: (context, value, child) {
-                  // print(value.isloading);
-                  return value.isloading == false
-                      ? Button(
+              Consumer<RegisterAsPurohithProvider>(
+                builder: (context, registrationProvider, child) {
+                  return registrationProvider.isLoading
+                      ? const CircularProgressIndicator(
+                          backgroundColor: Colors.yellow,
+                        )
+                      : Button(
                           onTap: () async {
-                            if (Form.of(context).validate()) {
-                              await value.finalregister(
-                                "+91${widget.mobileNo!.text.trim()}",
-                                widget.adhar!.text.trim(),
-                                widget.profilepic!.text.trim(),
-                                widget.description!.text.trim(),
-                                widget.languages!.text.trim(),
-                                widget.userName!.text.trim(),
-                                context,
-                                prices,
+                            if (formKey.currentState!.validate()) {
+                              print(
+                                  "Selected Category IDs: ${apicalls.selectedCatId}");
+                              await registrationProvider.register(
+                                mobileno: widget.mobileNo!.text.trim(),
+                                experience: widget.description!.text.trim(),
+                                languages: widget.languages!.text.trim(),
+                                userName: widget.userName!.text.trim(),
+                                context: context,
+                                locationId: apicalls.locationId.toString(),
+                                selectedCatId: apicalls.selectedCatId,
+                                imageFileList: flutterFunctions.imageFileList,
                               );
-
-                              scaffoldKey.showSnackBar(SnackBar(
-                                content: Text('${value.messages}'),
-                                duration: Duration(seconds: 5),
-                              ));
                             }
                           },
                           buttonname: widget.buttonName,
-                        )
-                      : const CircularProgressIndicator(
-                          backgroundColor: Colors.yellow,
                         );
                 },
               ),

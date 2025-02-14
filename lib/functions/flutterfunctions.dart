@@ -92,13 +92,13 @@ class FlutterFunctions extends ChangeNotifier {
   }
 
   Future<void> registerPhoneAuth(
-      BuildContext context,
-      String phoneNumber,
-      String description,
-      String languages,
-      String username,
-      ScaffoldMessengerState scaffoldKey,
-      List price) async {
+    BuildContext context,
+    String phoneNumber,
+    String description,
+    String languages,
+    String username,
+    ScaffoldMessengerState scaffoldKey,
+  ) async {
     print("from register phone auth: $phoneNumber");
     //var completer = Completer<bool>();
     try {
@@ -119,7 +119,6 @@ class FlutterFunctions extends ChangeNotifier {
             ));
           },
           codeSent: (String verificationid, [int? forceresendingtoken]) async {
-            print("from registerPhoneAuth: ${price.map((e) => e).toList()}");
             scaffoldKey.showSnackBar(const SnackBar(
               content: Text('please verify  mobile no to register'),
               duration: Duration(seconds: 5),
@@ -129,7 +128,6 @@ class FlutterFunctions extends ChangeNotifier {
               "description": description,
               "languages": languages,
               "username": username,
-              "price": price
             });
             final prefs = await SharedPreferences.getInstance();
             prefs.setString('verificationid', verificationid);

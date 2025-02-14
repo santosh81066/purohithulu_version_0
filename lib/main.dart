@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:purohithulu/controller/apicalls.dart';
 import 'package:purohithulu/functions/flutterfunctions.dart';
+import 'package:purohithulu/providers/registerprovider.dart';
 import 'package:purohithulu/providers/wallet.dart';
 import 'package:purohithulu/screens/bookingscreen.dart';
 import 'package:purohithulu/screens/otp_screen.dart';
@@ -81,6 +82,7 @@ class _MyAppState extends State<MyApp> {
     final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => RegisterAsPurohithProvider()),
         ChangeNotifierProvider(create: (context) => Auth()),
         ChangeNotifierProvider(create: (context) => FlutterFunctions()),
         ChangeNotifierProxyProvider<Auth, ApiCalls>(
@@ -124,6 +126,9 @@ class _MyAppState extends State<MyApp> {
             ),
             routes: {
               'verifyotp': (context) => VerifyOtp(
+                    scaffoldMessengerKey: scaffoldMessengerKey,
+                  ),
+              'login': (context) => OtpScreen(
                     scaffoldMessengerKey: scaffoldMessengerKey,
                   ),
               'wellcome': (context) => const WellcomeScreen(),

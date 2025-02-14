@@ -303,7 +303,7 @@ class Auth extends ChangeNotifier {
       String languages,
       String userName,
       ScaffoldMessengerState scaffoldKey,
-      List prices) async {
+      ) async {
     final prefs = await SharedPreferences.getInstance();
 
     verificationId = prefs.getString('verificationid');
@@ -328,7 +328,7 @@ class Auth extends ChangeNotifier {
 
           await apiCalls
               .register("$phoneNumber", description, languages, userName,
-                  context, prices)
+                  context)
               .then((response) async {
             switch (response) {
               case 400:

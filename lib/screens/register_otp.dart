@@ -47,7 +47,7 @@ class _RegisterVerifyOtpState extends State<RegisterVerifyOtp> {
     var description = userDetails['description'];
     var languages = userDetails['languages'];
     var username = userDetails['username'];
-    var prices = (userDetails['price'] ?? []) as List;
+    //var prices = (userDetails['price'] ?? []) as List;
     final ScaffoldMessengerState scaffoldKey =
         widget.scaffoldMessengerKey!.currentState as ScaffoldMessengerState;
     return Scaffold(
@@ -119,7 +119,7 @@ class _RegisterVerifyOtpState extends State<RegisterVerifyOtp> {
                                         languages,
                                         username,
                                         scaffoldKey,
-                                        prices);
+                                        );
                                     timer();
                                   },
                                   child: Text("Resend OTP"));
@@ -155,7 +155,7 @@ class _RegisterVerifyOtpState extends State<RegisterVerifyOtp> {
                                           languages,
                                           username,
                                           scaffoldKey,
-                                          prices);
+                                          );
                                     }
                                   },
                           );
